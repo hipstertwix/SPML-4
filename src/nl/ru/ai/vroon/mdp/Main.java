@@ -2,6 +2,7 @@ package nl.ru.ai.vroon.mdp;
 
 import java.util.List;
 
+import com.sun.jdi.Value;
 import nl.ru.ai.MartijnArnoldussenKoenNaarding.value_iteration.ValueIteration;
 
 /**
@@ -28,21 +29,25 @@ public class Main {
 		System.out.println("-1.7:\n");
 		values = vi.calculateValues(3000);
 		ValueIteration.printTable(values);
+		ValueIteration.printActionTable(ValueIteration.getActionTable(values, mdp), true);
 		
 		mdp.setNoReward(-0.3);
 		System.out.println("-0.3:\n");
 		values = vi.calculateValues(30);
 		ValueIteration.printTable(values);
+		ValueIteration.printActionTable(ValueIteration.getActionTable(values, mdp), false);
 		
 		mdp.setNoReward(-0.01);
 		System.out.println("-0.01:\n");
 		values = vi.calculateValues(30);
 		ValueIteration.printTable(values);
+		ValueIteration.printActionTable(ValueIteration.getActionTable(values, mdp), true);
 		
 		mdp.setNoReward(0.5);
 		System.out.println("0.5:\n");
 		values = vi.calculateValues(30);
 		ValueIteration.printTable(values);
+		ValueIteration.printActionTable(ValueIteration.getActionTable(values, mdp), false);
 		
 //		for (int i = 0; i < 15; i++){
 //			mdp.performAction(Action.UP);
