@@ -16,5 +16,16 @@ public class Coord {
 	public boolean equals(int a, int b) {
 		return x == a && y == b;
 	}
-	
+
+	public int getX() {
+		return x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public String toString() {
+		return String.format("(%s, %s)", x, y);
+	}
 }
