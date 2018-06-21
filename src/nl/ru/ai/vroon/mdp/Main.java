@@ -16,43 +16,13 @@ public class Main {
 	public static void main(String[] args) {
 		MarkovDecisionProblem mdp = new MarkovDecisionProblem();
 		mdp.setInitialState(0, 0);
-		
-//		ValueIteration vi = new ValueIteration(mdp);
-//
-//		double[][] values = vi.calculateValues(30);
-//		ValueIteration.printTable(values);
-		
-//		mdp.setNoReward(-1.7);
-//		System.out.println("-1.7:\n");
-//		values = vi.calculateValues(3000);
-//		ValueIteration.printTable(values);
-//		ValueIteration.printActionTable(ValueIteration.getActionTable(values, mdp), true);
-//		
-//		mdp.setNoReward(-0.3);
-//		System.out.println("-0.3:\n");
-//		values = vi.calculateValues(30);
-//		ValueIteration.printTable(values);
-//		ValueIteration.printActionTable(ValueIteration.getActionTable(values, mdp), false);
-//		
-//		mdp.setNoReward(-0.01);
-//		System.out.println("-0.01:\n");
-//		values = vi.calculateValues(30);
-//		ValueIteration.printTable(values);
-//		ValueIteration.printActionTable(ValueIteration.getActionTable(values, mdp), true);
-//		
-//		mdp.setNoReward(0.5);
-//		System.out.println("0.5:\n");
-//		values = vi.calculateValues(30);
-//		ValueIteration.printTable(values);
-//		ValueIteration.printActionTable(ValueIteration.getActionTable(values, mdp), false);
-		
-//		Action[][] actions = ValueIteration.getActionTable(values, mdp);
+		mdp.restart();
 
-		QueueLearning kju = new QueueLearning(mdp, 12345, false, 1, 0.1,7);
+		QueueLearning kju = new QueueLearning(mdp, /*12345*/ 55, false, .9, .009,1);
 
 
 
-		for(int i = 0; i < 100; i++) {
+		for(int i = 0; i < 11200; i++) {
 			if(i%2000==0) {
 				System.out.println(i);
 			}
@@ -60,6 +30,13 @@ public class Main {
 		}
 
 		kju.printActions();
+
+		kju.printGridValues();
+//		Map<Tuple<Coord, Action>, Integer> map = kju.getCountMap();
+//		for(Tuple<Coord, Action> key : map.keySet()) {
+//            System.out.println(String.format("%s <- map[%s]", map.get(key), key));
+//        }
+
 //
 //		while(!mdp.isTerminated()) {
 //

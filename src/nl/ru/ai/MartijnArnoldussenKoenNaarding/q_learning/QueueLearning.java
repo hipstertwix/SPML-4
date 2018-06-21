@@ -10,6 +10,7 @@ public class QueueLearning {
 
 	
 	private final MarkovDecisionProblem mdp;
+	private Coord startPosition;
 	private final static Action[] ACTIONS = {Action.UP, Action.DOWN, Action.LEFT, Action.RIGHT};
 	private final static Double DEFAULT_VALUE = 0d;
 	private Map<Tuple<Coord, Action>, Double> valuesMap;
@@ -41,12 +42,14 @@ public class QueueLearning {
 		this.seed = new Random(seed);
 	}
 
+	private static void printf(Object o, Object... args) {
+        System.out.println(String.format(o.toString(), args));
+    }
+
 	/**
 	 * shallow copy
-	 * @param map
-	 * @param <T>
-	 * @param <U>
-	 * @return
+	 * @param map the map
+	 * @return shallow copy of map
 	 */
 	private <T, U> Map copy(Map<T, U> map) {
 		Map map_ = new HashMap<T, U>();
@@ -56,25 +59,30 @@ public class QueueLearning {
 		return map_;
 	}
 
-
+	public Map<Tuple<Coord, Action>, Integer> getCountMap() {
+	    return countsMap;
+    }
 
 	public void step(boolean print) {
+	    while(mdp.getField(mdp.getStateXPosition(), mdp.getStateYPostion()) != Field.EMPTY) {
+	        mdp.setState(seed.nextInt(mdp.getWidth()), seed.nextInt(mdp.getHeight()));
+        }
+
 
 		Action action = chooseAction();
-		Coord coord = new Coord(mdp.getStateXPosition(), mdp.getStateYPostion());
+        this.startPosition = new Coord(mdp.getStateXPosition(), mdp.getStateYPostion());
+        mdp.performAction(action);
 
-		Tuple<Coord, Action> coordAction = new Tuple<>(coord, action);
+		Tuple<Coord, Action> coordAction = new Tuple<>(startPosition, action);
 		countsMap.put(coordAction, countsMap.getOrDefault(coordAction, 0)+1);
 
 		double value = val(coordAction, 0);
 
-		valuesMap.put(coordAction, value);
+		valuesNew.put(coordAction, value);
 
-		if(print) {
-			System.out.println(valuesNew);
-		}
+		valuesMap = copy(valuesNew);
 
-		valuesMap = copy(valuesNew);}
+	}
 
 
 
@@ -86,7 +94,9 @@ public class QueueLearning {
 
 		Coord curCoord = move(coordAction);
 		double oldValue = valuesMap.getOrDefault(coordAction, DEFAULT_VALUE);
-		double reward = mdp.getReward(f);
+
+		double reward = mdp.getReward(mdp.getField(mdp.getStateXPosition(), mdp.getStateYPostion()));//mdp.getReward(f);
+        printf(String.format("tried %s from %s with reward %s for field %s", coordAction.getSecond(), coordAction.getFirst(), reward, mdp.getField(mdp.getStateXPosition(), mdp.getStateYPostion())));
 		double discount = Math.pow(discountFactor, depth);
 		double optimalFutureValue;
 		if(depth >= maxDepth) {
@@ -96,11 +106,13 @@ public class QueueLearning {
 			for (Action action : ACTIONS) {
 				double val = val(new Tuple<>(curCoord, action), depth + 1);
 				futureValues.add(val);
-				valuesNew.put(new Tuple<>(curCoord, action), val);
+				Tuple<Coord, Action> tup = new Tuple<>(curCoord, action);
+				//valuesNew.put(tup, val);
 			}
 			optimalFutureValue = Collections.max(futureValues);
 		}
-		return (1 - learningRate) * oldValue + learningRate * (reward + discount * optimalFutureValue);
+		double val  = (1 - learningRate) * oldValue + learningRate * (reward + discount * optimalFutureValue);
+		return val;
 	}
 
 	/**
@@ -147,19 +159,19 @@ public class QueueLearning {
 		}
 	}
 
+    /**
+     * TODO: this is bad if its not random
+     * @return
+     */
 	private Action chooseAction() {
 
-		Coord coord = new Coord(mdp.getStateXPosition(), mdp.getStateYPostion());
-
 		if(this.random) {
-
 			return ACTIONS[seed.nextInt(4)];
-
 		} else {
 			Action leastFrequent = null;
 			Integer leastFrequentCount = Integer.MAX_VALUE;
 			for(Action a : ACTIONS) {
-				Tuple<Coord, Action> coordAction = new Tuple<>(coord, a);
+				Tuple<Coord, Action> coordAction = new Tuple<>(startPosition, a);
 				if(countsMap.containsKey(coordAction)) {
 					if(leastFrequent == null || countsMap.get(coordAction) < leastFrequentCount) {
 						leastFrequent = a;
@@ -202,6 +214,25 @@ public class QueueLearning {
 			System.out.println(sb + "\n");
 		}
 	}
-	
-	
+
+
+    public void printGridValues() {
+        for(int y = mdp.getHeight()-1; y >= 0; y--) {
+            StringBuilder sb = new StringBuilder();
+            for(int x = 0; x < mdp.getWidth(); x++) {
+
+                Coord coord = new Coord(x, y);
+                double bestScore = Double.NEGATIVE_INFINITY;
+                for(Action action : ACTIONS) {
+                    Tuple<Coord, Action> coordAction = new Tuple<>(coord, action);
+                    if(valuesMap.containsKey(coordAction) && valuesMap.get(coordAction) >  bestScore) {
+                        bestScore = valuesMap.get(coordAction);
+                    }
+                }
+
+                sb.append(bestScore + " ");
+            }
+            System.out.println(sb + "\n");
+        }
+    }
 }

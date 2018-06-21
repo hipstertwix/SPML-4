@@ -1,7 +1,6 @@
 package nl.ru.ai.vroon.mdp;
+import javax.swing.*;
 import java.util.Random;
-
-import javax.swing.JFrame;
 
 /**
  * Basic class that contains and displays a Markov Decision Problem with grid positions in a landscape as states. 
@@ -131,7 +130,7 @@ public class MarkovDecisionProblem {
 
 		terminated = false;
 		
-		waittime = 500;
+		waittime = 0;
 		showProgress = true;
 		
 		actionsCounter = 0;
@@ -354,7 +353,6 @@ public class MarkovDecisionProblem {
 
 	/**
 	 * Setter to set the reward given when a Field.NEGREWARD is reached
-	 * @param posReward
 	 */
 	public void setNegReward(double negReward) {
 		this.negReward = negReward;
@@ -362,7 +360,6 @@ public class MarkovDecisionProblem {
 
 	/**
 	 * Setter to set the reward given when a Field.EMPTY is reached
-	 * @param posReward
 	 */
 	public void setNoReward(double noReward) {
 		this.noReward = noReward;

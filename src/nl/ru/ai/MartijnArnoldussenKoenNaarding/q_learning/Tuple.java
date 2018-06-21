@@ -1,5 +1,7 @@
 package nl.ru.ai.MartijnArnoldussenKoenNaarding.q_learning;
 
+import java.util.Objects;
+
 public class Tuple<T, U> {
 	
 	private final T t;
@@ -19,12 +21,18 @@ public class Tuple<T, U> {
     }
 
     @Override
-    public boolean equals(Object obj) {
-	    if(!(obj instanceof Tuple)) {
-	        return false;
-        }
-        Tuple tup = (Tuple) obj;
-        return this.t.equals(tup.t) && this.u.equals(tup.u);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Tuple<?, ?> tuple = (Tuple<?, ?>) o;
+        return Objects.equals(t, tuple.t) &&
+                Objects.equals(u, tuple.u);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(t, u);
     }
 
     public String toString() {
